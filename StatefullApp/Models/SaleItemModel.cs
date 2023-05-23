@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace StatefullApp.Models
 {
-    public class SaleModel : ModelBase
+    public class SaleItemModel : ModelBase
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        public string Client { get; set; }
-        [Required]
-        public string SaleItems { get; set; }
+        public string ProductData { get; set; }
+        public int Qty { get; set; }
     }
 }

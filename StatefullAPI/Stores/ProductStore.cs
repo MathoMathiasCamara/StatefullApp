@@ -1,18 +1,12 @@
-﻿using StatefullApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using StatefullAPI.Models;
 
-namespace StatefullApp.Stores
+namespace StatefullAPI.Stores
 {
     public class ProductStore
     {
         private readonly SaleStore sellStore;
         private readonly StateDbContext _dbContext;
-        public DateTime StampToUse { get; set; } = DateTime.Now;
+        private DateTime StampToUse { get; set; } = DateTime.Now;
         public ProductStore(SaleStore sellStore, StateDbContext dbContext)
         {
 
@@ -38,7 +32,7 @@ namespace StatefullApp.Stores
         {
             var products = GetDatabase().GroupBy(x => x.Id).Select(x =>
             {
-                if (x.LastOrDefault().State != State.Deleted)
+                if (x.LastOrDefault().State == State.Added)
                     return new Product
                     {
                         Id = x.Key,
@@ -54,7 +48,7 @@ namespace StatefullApp.Stores
             var list = GetDatabase().ToList();
             var products = list.Where(x => x.Stamp.Date == date.Date).GroupBy(x => x.Id).Select(x =>
             {
-                if (x.LastOrDefault().State != State.Deleted)
+                if (x.LastOrDefault().State == State.Added)
                     return new Product
                     {
                         Id = x.Key,
@@ -83,7 +77,7 @@ namespace StatefullApp.Stores
                 Name = product.Name,
                 Index = Guid.NewGuid(),
                 Stamp = StampToUse,
-                State = State.Deleted,
+                State = state,
             };
 
             this._dbContext.Products.Add(item);
@@ -92,7 +86,13 @@ namespace StatefullApp.Stores
 
         public void UpdateProduct(Product product)
         {
-            Save(product, State.Modified);
+            var previousProduct = LoadProducts().FirstOrDefault(defaultValue => defaultValue.Id == product.Id);
+            if (previousProduct is null) return;
+
+            //labels a copy of previous as Modified
+            Save(previousProduct, State.Modified);
+            // and add a new line considered as the new value
+            Save(product, State.Added);
         }
 
         public IReadOnlyCollection<ProductModel> GetDatabase()

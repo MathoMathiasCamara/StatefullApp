@@ -1,12 +1,7 @@
-﻿using StatefullApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using StatefullAPI.Models;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace StatefullApp.Stores
+namespace StatefullAPI.Stores
 {
     public class SaleStore
     {
@@ -33,7 +28,7 @@ namespace StatefullApp.Stores
 
             var sells = GetDatabase().GroupBy(x => x.Id).Select(x =>
             {
-                if (x.LastOrDefault().State != State.Deleted)
+                if (x.LastOrDefault().State == State.Added)
                     return new Sale
                     {
                         Id = x.Key,
@@ -76,7 +71,7 @@ namespace StatefullApp.Stores
                 Index = Guid.NewGuid(),
                 Stamp = DateTime.UtcNow,
                 State = state,
-                SaleItems = JsonSerializer.Serialize(sale.SaleItems)
+                SaleItems = JsonSerializer.Serialize(sale.SaleItems.Select(x => new SaleItem {  Id = sale.SaleItems.ToList().IndexOf(x) + 1, Product = x.Product, Qty = x.Qty }))
             };
 
             this._dbContext.Sales.Add(item);

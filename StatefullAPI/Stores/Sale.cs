@@ -1,7 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Text;
 
-namespace StatefullApp.Stores
+namespace StatefullAPI.Stores
 {
     public class Sale
     {

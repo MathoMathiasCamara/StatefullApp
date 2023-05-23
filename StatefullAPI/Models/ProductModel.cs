@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StatefullApp.Models
+namespace StatefullAPI.Models
 {
     public  class ProductModel : ModelBase
     {
-        [Key]
         public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
 
         public override string ToString()
@@ -22,8 +20,17 @@ namespace StatefullApp.Models
 
     public enum State
     {
+        /// <summary>
+        /// A new line to add
+        /// </summary>
         Added,
+        /// <summary>
+        /// A line to remove
+        /// </summary>
         Deleted,
+        /// <summary>
+        /// Just like remove, sets the labels to Modified
+        /// </summary>
         Modified
     }
 }
